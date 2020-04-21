@@ -30,16 +30,16 @@ class UserRequired(CheckEngine):
         self.functie = functie
     def __call__(self,text="Insert user to login with",title="CheckPoint",*args, **kwargs):
 
-        if Config.cfg["DISPLAY"] == 0:
-            self.user_request()
         if Config.cfg["DISPLAY"] == 1:
+            self.user_request()
+        if Config.cfg["DISPLAY"] == 0:
             self.mutted_user_request()
 
 
-    def user_request(self):
+    def user_request(self,text="Insert user to login with",title="CheckPoint"):
         user_provided = pyautogui.prompt(text=text, title=title)
         try:
-            if len(user_provided) > 4 and self.getUser(user_provided):
+            if len(user_provided) >= 4 and self.getUser(user_provided):
                 Config.logged["tried"] = user_provided
                 return self.functie()
             else:
@@ -48,12 +48,11 @@ class UserRequired(CheckEngine):
             pass
 
     def mutted_user_request(self):
-        global user_provided
         print("Enter user ")
         user_provided = input()
-        #self.push_user_to_global(user_provided)
+        self.push_user_to_global(user_provided)
         try:
-            if len(user_provided) > 4 and self.getUser(user_provided):
+            if len(user_provided) >= 4 and self.getUser(user_provided):
                 Config.logged["tried"] = user_provided
                 return self.functie()
             else:
@@ -75,23 +74,25 @@ class PassRequired(CheckEngine):
         self.functie = functie
 
     def __call__(self, *args,**kwargs):
-        if Config.cfg["DISPLAY"] == 0:
-            self.password_request()
         if Config.cfg["DISPLAY"] == 1:
+            self.password_request()
+        if Config.cfg["DISPLAY"] == 0:
             self.mutted_password_request()
 
     def password_request(self,text="Password", mask="*", title="CheckPoint"):
 
         passowrd_provided = pyautogui.password(text=text, mask=mask, title=title)
         secure_password = self.hash_the_passwd(passowrd_provided)
+        print(Config.logged["user"],secure_password)
         if Config.logged["user"] == secure_password:
             return f"{secure_password} > " + str(self.functie())
         raise NoGoodPassword("Nemtodom")
 
-    def mutted_password_request(self,text="Password", mask="*", title="CheckPoint"):
-        print("adauga parola")
+    def mutted_password_request(self,text="Password"):
+
         passowrd_provided = getpass.getpass(prompt=text,stream=sys.stdout)
         secure_password = self.hash_the_passwd(passowrd_provided)
+        print(Config.logged["user"])
         if Config.logged["user"] == secure_password:
             return f"{secure_password} > " + str(self.functie())
         raise NoGoodPassword("Nemtodom")
@@ -103,12 +104,9 @@ class PassRequired(CheckEngine):
         return str(hash_parola.hexdigest())
 
 @UserRequired
-#@PassRequired
+@PassRequired
 def ceva():
     print(loggedUser)
-    return "Neata"
-
-
-print(ceva())
+ceva()
 
 
