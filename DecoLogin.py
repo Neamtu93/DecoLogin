@@ -58,7 +58,7 @@ class PassRequired(object):
 @PassRequired
 def ceva():
     user = None
-    return "Salut Lume!"
+    return "Neata"
 
 
 print(ceva())
