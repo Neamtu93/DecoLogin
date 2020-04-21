@@ -3,6 +3,7 @@ from functools import wraps
 from platform import system
 from app.config import Config
 from app.customError import NoUserName,NoGoodPassword
+
 class Logging(object):
     def __init__(self):
         pass
@@ -45,9 +46,12 @@ class UserRequired(CheckEngine):
                 raise NoUserName("No user and length of it is smaller then 4")
         except TypeError:
             pass
+
     def mutted_user_request(self):
+        global user_provided
         print("Enter user ")
         user_provided = input()
+        #self.push_user_to_global(user_provided)
         try:
             if len(user_provided) > 4 and self.getUser(user_provided):
                 Config.logged["tried"] = user_provided
@@ -62,6 +66,8 @@ class UserRequired(CheckEngine):
             if i["name"] == user:
                 return True
         return False
+    def push_user_to_global(self,user):
+        globals()["loggedUser"] = user
 
 class PassRequired(CheckEngine):
     def __init__(self, functie):
@@ -92,14 +98,14 @@ class PassRequired(CheckEngine):
 
 
     def hash_the_passwd(self,parola):
-
         hash_parola = hashlib.new("ripemd160")
         hash_parola.update(bytes(parola, encoding="ascii"))
         return str(hash_parola.hexdigest())
 
 @UserRequired
-@PassRequired
+#@PassRequired
 def ceva():
+    print(loggedUser)
     return "Neata"
 
 
