@@ -51,7 +51,8 @@ class PassRequired(object):
             # we have to check linux/windows  we have tty/stty
             if os.environ["DISPLAY"]:
                 Config.cfg["DISPLAY"] = 1
-        else:
+
+        if system().lower() == "windows":
             Config.cfg["SYSTEM"] = "windows"
 
 @UserRequired
